@@ -1,13 +1,13 @@
 const tg = window.Telegram.WebApp;
 tg.expand();
 
-// Настройки главной кнопки
-tg.MainButton.text = "ВЫБРАТЬ УСЛУГУ";
+// Настройки кнопки
 tg.MainButton.textColor = "#FFFFFF";
 tg.MainButton.color = "#FF85A1";
 
 let selectedService = null; 
 
+// ОБЯЗАТЕЛЬНО: Данные должны быть в этом файле, если ты их используешь в showServices
 const data = {
     nails: [
         { name: "Маникюр б/п", price: "1500₽" },
@@ -31,7 +31,6 @@ const data = {
 };
 
 function showServices(cat, el) {
-    // Визуал активной категории
     document.querySelectorAll('.category-card').forEach(c => c.classList.remove('active'));
     el.classList.add('active');
 
@@ -41,12 +40,13 @@ function showServices(cat, el) {
     data[cat].forEach(item => {
         const div = document.createElement('div');
         div.className = 'service-item';
-        // При клике на услугу — запоминаем её и меняем кнопку
+        
         div.onclick = () => {
-            selectedService = item;
-            tg.MainButton.text = `ЗАПИСАТЬСЯ: ${item.name.toUpperCase()}`;
+            selectedService = item; 
+            tg.MainButton.text = `ВЫБРАТЬ: ${item.name.toUpperCase()}`;
             tg.MainButton.show();
         };
+
         div.innerHTML = `
             <span class="service-name">${item.name}</span>
             <span class="service-price">${item.price}</span>
@@ -55,7 +55,6 @@ function showServices(cat, el) {
     });
 }
 
-// Отправка данных при нажатии на большую кнопку внизу ТГ
 tg.onEvent('mainButtonClicked', function(){
     if (selectedService) {
         tg.sendData(JSON.stringify(selectedService)); 
