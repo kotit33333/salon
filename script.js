@@ -120,7 +120,7 @@ async function renderTime() {
     const container = document.getElementById('time-container');
     container.innerHTML = 'Загрузка...';
     
-    const url = `https://script.google.com/macros/s/AKfycbyABSbnJmD4_PjVfpPBuaIkO5NxYp-PrrS-6shChxA3alNl8F66uKjiQa-1ldbdsw4jag/exec?date=${encodeURIComponent(selectedDate)}`;
+    const url = `https://script.google.com/macros/s/AKfycbz0Q_y1hwA9ir7_d6GznAuKfgriD8WFVN1DodfHxsvelup7TquMxYgtdIslDK18l89qfw/exec?date=${encodeURIComponent(selectedDate)}`;
     
     try {
         const response = await fetch(url);
