@@ -119,38 +119,43 @@ async function renderTime() {
     const container = document.getElementById('time-container');
     container.innerHTML = 'Загрузка...';
     
-    // 1. Получаем занятые слоты из таблицы
-    // Замени URL на свою ссылку из Deployment
     const url = `https://script.google.com/macros/s/AKfycbwlo-RahpIibjD8lgh-fAiuhmsGR1eJD2TRvGxumcLpqk-VWAvCxjXXtilprtqbgZiL-w/exec?date=${encodeURIComponent(selectedDate)}`;
     
     try {
         const response = await fetch(url);
-        const busySlots = await response.json(); // Придет массив типа ["12:00", "14:00"]
+        const busySlots = await response.json(); 
+        
+        // Очищаем массив от лишних пробелов, если они есть в таблице
+        const cleanedBusySlots = busySlots.map(s => s.toString().trim());
 
         container.innerHTML = '';
         const allSlots = ['10:00', '12:00', '14:00', '16:00', '18:00', '20:00'];
 
         allSlots.forEach(slot => {
-            const isBusy = busySlots.includes(slot);
+            const isBusy = cleanedBusySlots.includes(slot);
             let div = document.createElement('div');
+            // Применяем классы
             div.className = isBusy ? 'time-item busy' : 'time-item';
             div.innerText = slot;
             
             if (!isBusy) {
                 div.onclick = () => {
+                    // Удаляем selected у всех и ставим текущему
                     document.querySelectorAll('.time-item').forEach(el => el.classList.remove('selected'));
                     div.classList.add('selected');
                     selectedTime = slot;
+                    tg.MainButton.setText(`ЗАПИСАТЬСЯ: ${selectedDate}, ${selectedTime}`);
                     tg.MainButton.show();
                 };
             } else {
-                div.style.opacity = '0.3';
-                div.innerText += ' (занято)';
+                // Если занято, клик не вешаем
+                div.style.pointerEvents = 'none'; 
             }
             container.appendChild(div);
         });
     } catch (e) {
         container.innerHTML = 'Ошибка загрузки времени';
+        console.error(e);
     }
 }
 
