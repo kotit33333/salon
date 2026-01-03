@@ -74,48 +74,52 @@
     margin-bottom: 20px;
         }
 
+                /* Общие стили для плиток (даты и время) */
         .day-item, .time-item {
-            padding: 10px;
-            background: #f0f0f0;
-            border-radius: 8px;
+            padding: 12px;
+            background: #ffffff; /* Белый фон для четкости */
+            border-radius: 12px;
             text-align: center;
             cursor: pointer;
-            border: 1px solid #ddd;
+            border: 2px solid #eee; /* Тонкая рамка */
+            font-weight: 500;
+            transition: all 0.2s ease;
         }
 
-        .back-btn {
-            background: none;
-            border: none;
-            color: #007bff;
-            margin-bottom: 15px;
-            cursor: pointer;
+        /* СОСТОЯНИЕ: ВЫБРАНО (Розовый) */
+        /* Этот стиль теперь один и для дат, и для времени */
+        .day-item.selected, .time-item.selected {
+            background-color: var(--primary-pink) !important;
+            color: white !important;
+            border-color: var(--primary-pink) !important;
+            box-shadow: 0 4px 10px rgba(255, 133, 161, 0.3);
         }
-        /* Стиль для занятого времени */
-            .time-item.busy {
-                background-color: #fce4ec; /* Бледный розовый */
-                color: #bdbdbd;            /* Серый текст */
-                border-color: #eeeeee;
-                cursor: not-allowed;       /* Курсор "запрещено" */
-                opacity: 0.6;
-                position: relative;
-            }
 
-            /* Добавим надпись "Занято" мелким шрифтом */
-            .time-item.busy::after {
-                content: "занято";
-                display: block;
-                font-size: 8px;
-                margin-top: -2px;
-                color: #ffb1c1;
-            }
+        /* СОСТОЯНИЕ: ЗАНЯТО (Темно-серый, не прозрачный) */
+        .time-item.busy {
+            background-color: #e0e0e0 !important; /* Серый фон */
+            color: #999 !important;               /* Темно-серый текст */
+            border-color: #d0d0d0 !important;
+            text-decoration: line-through;       /* Зачеркиваем время */
+            cursor: not-allowed;
+            opacity: 1;                          /* Убираем прозрачность, чтобы было видно */
+        }
 
-            /* Стиль для твоего текущего выбора (для сравнения) */
-            .time-item.selected {
-                background-color: var(--primary-pink) !important;
-                color: white !important;
-                border-color: var(--primary-pink) !important;
-                transform: scale(1.05); /* Немного увеличим при выборе */
-            }
+        .time-item.busy::after {
+            content: "занято";
+            display: block;
+            font-size: 9px;
+            text-decoration: none !important;
+            color: #888;
+        }
+
+        /* Заголовки секций */
+        .section-title {
+            font-size: 16px;
+            font-weight: 700;
+            margin: 20px 0 10px;
+            color: var(--text-dark);
+        }
     </style>
 </head>
 <body>
