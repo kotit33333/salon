@@ -1,13 +1,13 @@
+// Инициализация Telegram WebApp
 const tg = window.Telegram.WebApp;
 tg.expand();
 
-// Настройки кнопки
+// Настройки главной кнопки (скрыта по умолчанию)
 tg.MainButton.textColor = "#FFFFFF";
 tg.MainButton.color = "#FF85A1";
 
 let selectedService = null; 
 
-// ОБЯЗАТЕЛЬНО: Данные должны быть в этом файле, если ты их используешь в showServices
 const data = {
     nails: [
         { name: "Маникюр б/п", price: "1500₽" },
@@ -31,6 +31,7 @@ const data = {
 };
 
 function showServices(cat, el) {
+    // Подсветка активной категории
     document.querySelectorAll('.category-card').forEach(c => c.classList.remove('active'));
     el.classList.add('active');
 
@@ -41,10 +42,11 @@ function showServices(cat, el) {
         const div = document.createElement('div');
         div.className = 'service-item';
         
+        // Логика выбора услуги
         div.onclick = () => {
             selectedService = item; 
             tg.MainButton.text = `ВЫБРАТЬ: ${item.name.toUpperCase()}`;
-            tg.MainButton.show();
+            tg.MainButton.show(); // Показываем кнопку только после выбора услуги
         };
 
         div.innerHTML = `
@@ -55,8 +57,10 @@ function showServices(cat, el) {
     });
 }
 
+// Обработка нажатия на главную кнопку внизу Telegram
 tg.onEvent('mainButtonClicked', function(){
     if (selectedService) {
+        // Отправляем объект услуги боту в формате JSON
         tg.sendData(JSON.stringify(selectedService)); 
     }
     tg.close();
