@@ -1,67 +1,81 @@
-// Инициализация Telegram WebApp
-const tg = window.Telegram.WebApp;
-tg.expand();
+let tg = window.Telegram.WebApp;
+let selectedService = null;
+let selectedDate = null;
+let selectedTime = null;
 
-// Настройки главной кнопки (скрыта по умолчанию)
-tg.MainButton.textColor = "#FFFFFF";
-tg.MainButton.color = "#FF85A1";
+tg.expand(); // Раскрываем на всё окно
 
-let selectedService = null; 
+// 1. ФУНКЦИЯ ВЫБОРА УСЛУГИ (Обнови свою старую)
+function selectService(name, price) {
+    selectedService = { name, price };
+    
+    // Скрываем список услуг, показываем блок даты
+    document.getElementById('services-list').style.display = 'none';
+    document.getElementById('booking-section').style.display = 'block';
+    
+    renderDays(); // Запускаем генерацию дней
+}
 
-const data = {
-    nails: [
-        { name: "Маникюр б/п", price: "1500₽" },
-        { name: "Покрытие гель-лак", price: "2200₽" },
-        { name: "Наращивание", price: "3500₽" }
-    ],
-    lashes: [
-        { name: "Классика", price: "2000₽" },
-        { name: "2D Объем", price: "2500₽" },
-        { name: "Ламинирование", price: "1800₽" }
-    ],
-    pedi: [
-        { name: "Педикюр б/п", price: "2000₽" },
-        { name: "Педикюр с покрытием", price: "2800₽" }
-    ],
-    face: [
-        { name: "Чистка лица", price: "3000₽" },
-        { name: "Пилинг", price: "2500₽" },
-        { name: "Массаж лица", price: "1500₽" }
-    ]
-};
-
-function showServices(cat, el) {
-    // Подсветка активной категории
-    document.querySelectorAll('.category-card').forEach(c => c.classList.remove('active'));
-    el.classList.add('active');
-
-    const container = document.getElementById('services-container');
+// 2. ГЕНЕРАЦИЯ ДНЕЙ
+function renderDays() {
+    const container = document.getElementById('days-container');
     container.innerHTML = '';
     
-    data[cat].forEach(item => {
-        const div = document.createElement('div');
-        div.className = 'service-item';
+    for (let i = 0; i < 7; i++) {
+        let date = new Date();
+        date.setDate(date.getDate() + i);
+        let dateStr = date.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' });
         
-        // Логика выбора услуги
+        let div = document.createElement('div');
+        div.className = 'day-item';
+        div.innerText = dateStr;
         div.onclick = () => {
-            selectedService = item; 
-            tg.MainButton.text = `ВЫБРАТЬ: ${item.name.toUpperCase()}`;
-            tg.MainButton.show(); // Показываем кнопку только после выбора услуги
+            document.querySelectorAll('.day-item').forEach(el => el.classList.remove('selected'));
+            div.classList.add('selected');
+            selectedDate = dateStr;
+            renderTime(); // Когда выбрали дату, показываем время
         };
+        container.appendChild(div);
+    }
+}
 
-        div.innerHTML = `
-            <span class="service-name">${item.name}</span>
-            <span class="service-price">${item.price}</span>
-        `;
+// 3. ГЕНЕРАЦИЯ ВРЕМЕНИ
+function renderTime() {
+    const container = document.getElementById('time-container');
+    container.innerHTML = '';
+    const slots = ['10:00', '12:00', '14:00', '16:00', '18:00'];
+    
+    slots.forEach(slot => {
+        let div = document.createElement('div');
+        div.className = 'time-item';
+        div.innerText = slot;
+        div.onclick = () => {
+            document.querySelectorAll('.time-item').forEach(el => el.classList.remove('selected'));
+            div.classList.add('selected');
+            selectedTime = slot;
+            
+            // Настраиваем и показываем главную кнопку ТГ
+            tg.MainButton.setText(`Записаться на ${selectedDate}, ${selectedTime}`);
+            tg.MainButton.show();
+        };
         container.appendChild(div);
     });
 }
 
-// Обработка нажатия на главную кнопку внизу Telegram
+// 4. КНОПКА "НАЗАД"
+function backToServices() {
+    document.getElementById('booking-section').style.display = 'none';
+    document.getElementById('services-list').style.display = 'block';
+    tg.MainButton.hide();
+}
+
+// 5. ОТПРАВКА ДАННЫХ (Обнови обработчик клика MainButton)
 tg.onEvent('mainButtonClicked', function(){
-    if (selectedService) {
-        // Отправляем объект услуги боту в формате JSON
-        tg.sendData(JSON.stringify(selectedService)); 
-    }
-    tg.close();
+    const data = {
+        service: selectedService.name,
+        price: selectedService.price,
+        date: selectedDate,
+        time: selectedTime
+    };
+    tg.sendData(JSON.stringify(data));
 });
