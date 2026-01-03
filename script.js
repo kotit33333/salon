@@ -105,10 +105,11 @@ function renderDays() {
         div.innerText = dayStr;
         
         div.onclick = () => {
-            document.querySelectorAll('.day-item').forEach(el => el.classList.remove('selected'));
-            div.classList.add('selected');
-            selectedDate = dayStr;
-            renderTime();
+            // Находим все элементы с классом day-item и убираем selected
+    document.querySelectorAll('.day-item').forEach(el => el.classList.remove('selected'));
+    div.classList.add('selected'); // Ставим розовый цвет
+    selectedDate = dayStr;
+    renderTime();
         };
         container.appendChild(div);
     }
