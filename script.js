@@ -121,7 +121,7 @@ async function renderTime() {
     
     // 1. Получаем занятые слоты из таблицы
     // Замени URL на свою ссылку из Deployment
-    const url = `https://script.google.com/macros/s/AKfycbz2640FcKbgmaqiR4WZuhl4RKU2iaDBVHxGKg7pLAgPMPR8c-QsmJx3LABp3D3M7QSXrw/exec?date=${encodeURIComponent(selectedDate)}`;
+    const url = `https://script.google.com/macros/s/AKfycbwlo-RahpIibjD8lgh-fAiuhmsGR1eJD2TRvGxumcLpqk-VWAvCxjXXtilprtqbgZiL-w/exec?date=${encodeURIComponent(selectedDate)}`;
     
     try {
         const response = await fetch(url);
