@@ -102,11 +102,11 @@
     <script src="script.js"></script>
     <h1>Услуги</h1>
 
-    <div class="categories" id="categories-grid">
-        <div class="category-card" onclick="showServices('nails', this)">Ногти</div>
-        <div class="category-card" onclick="showServices('lashes', this)">Ресницы</div>
-        <div class="category-card" onclick="showServices('pedi', this)">Педикюр</div>
-        <div class="category-card" onclick="showServices('face', this)">Уход</div>
+    <div id="categories">
+        <div class="category-card" data-cat="nails">Ногти</div>
+        <div class="category-card" data-cat="lashes">Ресницы</div>
+        <div class="category-card" data-cat="pedi">Педикюр</div>
+        <div class="category-card" data-cat="face">Лицо</div>
     </div>
 
     <div id="services-container" class="services-list"></div>
