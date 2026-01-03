@@ -102,23 +102,19 @@
     <script src="script.js"></script>
     <h1>Услуги</h1>
 
-    <div id="categories">
-        <div class="category-card" data-cat="nails">Ногти</div>
-        <div class="category-card" data-cat="lashes">Ресницы</div>
-        <div class="category-card" data-cat="pedi">Педикюр</div>
-        <div class="category-card" data-cat="face">Лицо</div>
+    <div id="categories" class="categories-grid">
+    <div class="category-card" data-cat="nails">Ногти</div>
+    <div class="category-card" data-cat="lashes">Ресницы</div>
+    <div class="category-card" data-cat="pedi">Педикюр</div>
+    <div class="category-card" data-cat="face">Лицо</div>
     </div>
 
-    <div id="services-container" class="services-list"></div>
-    <div id="services-list"></div>
+    <div id="services-container"></div>
 
     <div id="booking-section" style="display: none;">
-        <button onclick="backToServices()" class="back-btn">← Назад к услугам</button>
-        
         <div class="section-title">Выберите дату</div>
         <div id="days-container" class="days-grid"></div>
-
-        <div class="section-title">Доступное время</div>
+        <div class="section-title" style="margin-top:20px;">Выберите время</div>
         <div id="time-container" class="time-grid"></div>
     </div>
 

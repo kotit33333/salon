@@ -1,75 +1,120 @@
 const tg = window.Telegram.WebApp;
 tg.expand();
 
-tg.MainButton.textColor = "#FFFFFF";
-tg.MainButton.color = "#FF85A1";
+// Настройки кнопки
+tg.MainButton.setParams({
+    color: '#FF85A1',
+    text_color: '#FFFFFF'
+});
 
-let selectedService = null; 
+let selectedService = null;
 let selectedDate = null;
 let selectedTime = null;
-let currentStep = 'services'; // Шаги: 'services' или 'datetime'
+let currentStep = 'services'; // 'services' или 'datetime'
 
 const data = {
-    nails: [{ name: "Маникюр б/п", price: "1500₽" }, { name: "Покрытие гель-лак", price: "2200₽" }, { name: "Наращивание", price: "3500₽" }],
-    lashes: [{ name: "Классика", price: "2000₽" }, { name: "2D Объем", price: "2500₽" }, { name: "Ламинирование", price: "1800₽" }],
-    pedi: [{ name: "Педикюр б/п", price: "2000₽" }, { name: "Педикюр с покрытием", price: "2800₽" }],
-    face: [{ name: "Чистка лица", price: "3000₽" }, { name: "Пилинг", price: "2500₽" }, { name: "Массаж лица", price: "1500₽" }]
+    nails: [
+        { name: "Маникюр б/п", price: "1500₽" },
+        { name: "Покрытие гель-лак", price: "2200₽" },
+        { name: "Наращивание", price: "3500₽" }
+    ],
+    lashes: [
+        { name: "Классика", price: "2000₽" },
+        { name: "2D Объем", price: "2500₽" },
+        { name: "Ламинирование", price: "1800₽" }
+    ],
+    pedi: [
+        { name: "Педикюр б/п", price: "2000₽" },
+        { name: "Педикюр с покрытием", price: "2800₽" }
+    ],
+    face: [
+        { name: "Чистка лица", price: "3000₽" },
+        { name: "Пилинг", price: "2500₽" },
+        { name: "Массаж лица", price: "1500₽" }
+    ]
 };
 
-function showServices(cat, el) {
-    document.querySelectorAll('.category-card').forEach(c => c.classList.remove('active'));
-    el.classList.add('active');
+// 1. Инициализация кликов по категориям
+document.addEventListener('DOMContentLoaded', () => {
+    const cards = document.querySelectorAll('.category-card');
+    cards.forEach(card => {
+        card.addEventListener('click', () => {
+            const cat = card.getAttribute('data-cat');
+            
+            // Визуальный актив
+            cards.forEach(c => c.classList.remove('active'));
+            card.classList.add('active');
+            
+            renderServices(cat);
+        });
+    });
+});
 
+// 2. Отрисовка списка услуг
+function renderServices(cat) {
     const container = document.getElementById('services-container');
-    container.innerHTML = '';
+    container.innerHTML = ''; // Чистим старое
     
     data[cat].forEach(item => {
         const div = document.createElement('div');
         div.className = 'service-item';
+        div.innerHTML = `
+            <span class="service-name">${item.name}</span>
+            <span class="service-price">${item.price}</span>
+        `;
+        
         div.onclick = () => {
-            selectedService = item; 
-            tg.MainButton.text = `ПРОДОЛЖИТЬ: ${item.name.toUpperCase()}`;
+            selectedService = item;
+            tg.MainButton.setText(`ВЫБРАТЬ: ${item.name.toUpperCase()}`);
             tg.MainButton.show();
         };
-        div.innerHTML = `<span class="service-name">${item.name}</span><span class="service-price">${item.price}</span>`;
+        
         container.appendChild(div);
     });
 }
 
-// ФУНКЦИЯ ПЕРЕХОДА К КАЛЕНДАРЮ
+// 3. Переход к календарю
 function openCalendar() {
     currentStep = 'datetime';
+    
+    // Скрываем выбор услуг
     document.getElementById('categories').style.display = 'none';
     document.getElementById('services-container').style.display = 'none';
+    document.querySelector('h1').innerText = 'Дата и время';
     
+    // Показываем календарь
     const bookingSection = document.getElementById('booking-section');
     bookingSection.style.display = 'block';
     
-    tg.MainButton.hide(); // Прячем, пока не выберут время
+    tg.MainButton.hide(); 
     renderDays();
 }
 
+// 4. Генерация дней
 function renderDays() {
     const container = document.getElementById('days-container');
     container.innerHTML = '';
+    
     for (let i = 0; i < 7; i++) {
-        let date = new Date();
-        date.setDate(date.getDate() + i);
-        let dateStr = date.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' });
+        let d = new Date();
+        d.setDate(d.getDate() + i);
+        let dayStr = d.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' });
         
         let div = document.createElement('div');
         div.className = 'day-item';
-        div.innerText = dateStr;
+        div.innerText = dayStr;
+        
         div.onclick = () => {
             document.querySelectorAll('.day-item').forEach(el => el.classList.remove('selected'));
             div.classList.add('selected');
-            selectedDate = dateStr;
+            selectedDate = dayStr;
             renderTime();
         };
         container.appendChild(div);
     }
 }
 
+// 5. Генерация времени
 function renderTime() {
     const container = document.getElementById('time-container');
     container.innerHTML = '';
@@ -79,66 +124,31 @@ function renderTime() {
         let div = document.createElement('div');
         div.className = 'time-item';
         div.innerText = slot;
+        
         div.onclick = () => {
             document.querySelectorAll('.time-item').forEach(el => el.classList.remove('selected'));
             div.classList.add('selected');
             selectedTime = slot;
             
-            tg.MainButton.text = `ЗАПИСАТЬСЯ: ${selectedDate} В ${selectedTime}`;
+            tg.MainButton.setText(`ЗАПИСАТЬСЯ: ${selectedDate}, ${selectedTime}`);
             tg.MainButton.show();
         };
         container.appendChild(div);
     });
 }
 
-// ГЛАВНАЯ ЛОГИКА НАЖАТИЯ КНОПКИ
-tg.onEvent('mainButtonClicked', function(){
+// 6. Обработка кнопки Telegram
+tg.onEvent('mainButtonClicked', () => {
     if (currentStep === 'services') {
-        openCalendar(); // Если на этапе услуг — идем к датам
+        openCalendar();
     } else {
-        // Если на этапе дат — отправляем всё боту
-        const result = {
-            ...selectedService,
+        const finalData = {
+            service: selectedService.name,
+            price: selectedService.price,
             date: selectedDate,
             time: selectedTime
         };
-        tg.sendData(JSON.stringify(result));
+        tg.sendData(JSON.stringify(finalData));
         tg.close();
     }
 });
-
-// Ждем загрузки документа, чтобы элементы точно были в дереве
-document.addEventListener('DOMContentLoaded', () => {
-    
-    // Находим все карточки категорий
-    const cards = document.querySelectorAll('.category-card');
-    
-    cards.forEach(card => {
-        card.addEventListener('click', function() {
-            const category = this.getAttribute('data-cat');
-            // Вызываем нашу функцию
-            showServices(category, this);
-        });
-    });
-});
-
-// Саму функцию showServices сделай глобальной для надежности
-window.showServices = function(cat, el) {
-    document.querySelectorAll('.category-card').forEach(c => c.classList.remove('active'));
-    el.classList.add('active');
-
-    const container = document.getElementById('services-container');
-    container.innerHTML = '';
-    
-    data[cat].forEach(item => {
-        const div = document.createElement('div');
-        div.className = 'service-item';
-        div.onclick = () => {
-            selectedService = item; 
-            tg.MainButton.text = `ПРОДОЛЖИТЬ: ${item.name.toUpperCase()}`;
-            tg.MainButton.show();
-        };
-        div.innerHTML = `<span class="service-name">${item.name}</span><span class="service-price">${item.price}</span>`;
-        container.appendChild(div);
-    });
-};
