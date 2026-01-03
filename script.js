@@ -115,26 +115,43 @@ function renderDays() {
 }
 
 // 5. Генерация времени
-function renderTime() {
+async function renderTime() {
     const container = document.getElementById('time-container');
-    container.innerHTML = '';
-    const slots = ['10:00', '12:00', '14:00', '16:00', '18:00', '20:00'];
+    container.innerHTML = 'Загрузка...';
     
-    slots.forEach(slot => {
-        let div = document.createElement('div');
-        div.className = 'time-item';
-        div.innerText = slot;
-        
-        div.onclick = () => {
-            document.querySelectorAll('.time-item').forEach(el => el.classList.remove('selected'));
-            div.classList.add('selected');
-            selectedTime = slot;
+    // 1. Получаем занятые слоты из таблицы
+    // Замени URL на свою ссылку из Deployment
+    const url = `https://script.google.com/macros/s/AKfycbyhINdJ973PArCrebD1iX-9iLp5L2h8vWDPi0d-LsIsBt-nmsehLWU2dNTBMiFy4CuAxw/exec?date=${encodeURIComponent(selectedDate)}`;
+    
+    try {
+        const response = await fetch(url);
+        const busySlots = await response.json(); // Придет массив типа ["12:00", "14:00"]
+
+        container.innerHTML = '';
+        const allSlots = ['10:00', '12:00', '14:00', '16:00', '18:00', '20:00'];
+
+        allSlots.forEach(slot => {
+            const isBusy = busySlots.includes(slot);
+            let div = document.createElement('div');
+            div.className = isBusy ? 'time-item busy' : 'time-item';
+            div.innerText = slot;
             
-            tg.MainButton.setText(`ЗАПИСАТЬСЯ: ${selectedDate}, ${selectedTime}`);
-            tg.MainButton.show();
-        };
-        container.appendChild(div);
-    });
+            if (!isBusy) {
+                div.onclick = () => {
+                    document.querySelectorAll('.time-item').forEach(el => el.classList.remove('selected'));
+                    div.classList.add('selected');
+                    selectedTime = slot;
+                    tg.MainButton.show();
+                };
+            } else {
+                div.style.opacity = '0.3';
+                div.innerText += ' (занято)';
+            }
+            container.appendChild(div);
+        });
+    } catch (e) {
+        container.innerHTML = 'Ошибка загрузки времени';
+    }
 }
 
 // 6. Обработка кнопки Telegram

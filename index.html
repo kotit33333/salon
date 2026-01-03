@@ -96,6 +96,32 @@
             margin-bottom: 15px;
             cursor: pointer;
         }
+        /* Стиль для занятого времени */
+            .time-item.busy {
+                background-color: #fce4ec; /* Бледный розовый */
+                color: #bdbdbd;            /* Серый текст */
+                border-color: #eeeeee;
+                cursor: not-allowed;       /* Курсор "запрещено" */
+                opacity: 0.6;
+                position: relative;
+            }
+
+            /* Добавим надпись "Занято" мелким шрифтом */
+            .time-item.busy::after {
+                content: "занято";
+                display: block;
+                font-size: 8px;
+                margin-top: -2px;
+                color: #ffb1c1;
+            }
+
+            /* Стиль для твоего текущего выбора (для сравнения) */
+            .time-item.selected {
+                background-color: var(--primary-pink) !important;
+                color: white !important;
+                border-color: var(--primary-pink) !important;
+                transform: scale(1.05); /* Немного увеличим при выборе */
+            }
     </style>
 </head>
 <body>
