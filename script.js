@@ -106,3 +106,39 @@ tg.onEvent('mainButtonClicked', function(){
         tg.close();
     }
 });
+
+// Ждем загрузки документа, чтобы элементы точно были в дереве
+document.addEventListener('DOMContentLoaded', () => {
+    
+    // Находим все карточки категорий
+    const cards = document.querySelectorAll('.category-card');
+    
+    cards.forEach(card => {
+        card.addEventListener('click', function() {
+            const category = this.getAttribute('data-cat');
+            // Вызываем нашу функцию
+            showServices(category, this);
+        });
+    });
+});
+
+// Саму функцию showServices сделай глобальной для надежности
+window.showServices = function(cat, el) {
+    document.querySelectorAll('.category-card').forEach(c => c.classList.remove('active'));
+    el.classList.add('active');
+
+    const container = document.getElementById('services-container');
+    container.innerHTML = '';
+    
+    data[cat].forEach(item => {
+        const div = document.createElement('div');
+        div.className = 'service-item';
+        div.onclick = () => {
+            selectedService = item; 
+            tg.MainButton.text = `ПРОДОЛЖИТЬ: ${item.name.toUpperCase()}`;
+            tg.MainButton.show();
+        };
+        div.innerHTML = `<span class="service-name">${item.name}</span><span class="service-price">${item.price}</span>`;
+        container.appendChild(div);
+    });
+};
